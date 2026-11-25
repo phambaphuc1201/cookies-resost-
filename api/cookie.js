@@ -8,7 +8,7 @@ export default async function handler(req, res) {
 
   try {
     // LINK GOOGLE APPS SCRIPT CỦA BẠN ĐƯỢC GIẤU KÍN Ở ĐÂY:
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycby4nDmH2sK-03HqiP6CWzkL3pDQdL7OwqKZU9-aODtqXxmpPU5I2XMHAeq9yJ-yisbSgQ/exec";
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyFIcDKyBAp3EGKTXjs9CUy0Ev4ohr4tIKluApm2JXoT-eecpN-gCYAX9IJGPywAZzL/exec";
 
     const response = await fetch(GOOGLE_SHEET_URL, {
       method: 'POST',

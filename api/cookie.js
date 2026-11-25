@@ -1,15 +1,15 @@
-// api/cookie.js - Vercel Serverless Function (Write-Only Gateway)
+// api/cookie.js - Vercel Serverless Function (Bảo mật 100%)
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  // 1. CHẶN HOÀN TOÀN GET: Cấm mở xem link hoặc đọc trộm dữ liệu
+  // 1. Chặn hoàn toàn GET: Cấm mở xem link hoặc đọc trộm dữ liệu
   if (req.method !== 'POST') {
     return res.status(403).json({ error: '⛔ Cấm đọc: Chỉ chấp nhận đẩy dữ liệu lên qua POST!' });
   }
 
-  // 2. CHẶN CÁC LỆNH MUỐN XÓA HOẶC ĐỌC TỪ CLIENT
+  // 2. Chặn các lệnh muốn xóa hoặc đọc dữ liệu
   const body = req.body || {};
   const action = String(body.action || '').toLowerCase();
   if (action.includes('delete') || action.includes('clear') || action.includes('remove') || action.includes('read') || action.includes('get')) {
@@ -17,10 +17,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Luôn ép hành vi là thêm mới vào đuôi bảng (append_row)
+    // Luôn ép hành vi là ghi nối tiếp vào cuối (append_row)
     body.action = 'append_row';
 
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyN0dPhI7om7LZrfTFKgbVZ_otfElBqJV8WPokkt0ZvHDFgs6ooehtd0VHY93E-K5hX/exec";
+    // LẤY LINK TỰ ĐỘNG TỪ BIẾN MÔI TRƯỜNG BÍ MẬT CỦA VERCEL (GIẤU KÍN 100%)
+    const GOOGLE_SHEET_URL = process.env.GOOGLE_SHEET_URL;
+
+    if (!GOOGLE_SHEET_URL) {
+      return res.status(500).json({ error: 'Chưa cấu hình biến GOOGLE_SHEET_URL trên Vercel!' });
+    }
 
     const response = await fetch(GOOGLE_SHEET_URL, {
       method: 'POST',
@@ -30,7 +35,7 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    // 3. CHỈ TRẢ VỀ THÔNG BÁO THÀNH CÔNG (Không trả lại danh sách hay cookie của ai khác)
+    // 3. Chỉ trả về thông báo thành công, không trả nội dung nhạy cảm
     return res.status(200).json({
       status: data.status || 'success',
       stt: data.stt || 0,
